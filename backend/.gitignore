@@ -1,0 +1,38 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Local environment files
+.env
+*.env
+
+# Build and packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs
+*.log
+logs/
+
+# Editor files
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+
+# OS files
+.DS_Store
+
+# Misc
+*.swp
+*~
