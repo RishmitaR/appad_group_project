@@ -9,9 +9,15 @@ function Login() {
                 </div>
                 <div>
                     <label>Password </label>
+
                     <input type="password" />
+
                 </div>
                 <button type="submit">Login</button>
+
+                <p>
+                    Don't have an account? <a href="/signup">Sign Up</a>
+                </p>
             </form>
         </div>
     )
