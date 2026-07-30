@@ -15,7 +15,6 @@ env/
 
 # Build and packaging
 build/
-dist/
 *.egg-info/
 .eggs/
 
