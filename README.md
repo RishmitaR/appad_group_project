@@ -177,3 +177,88 @@ Your frontend should now be running at something like:
 2. Open terminal 2 → `cd frontend` → `npm run dev`
 3. Open your browser to the frontend URL and start coding!
 ---
+
+## Deployment (Heroku)
+
+This app is deployed as a single Heroku app: FastAPI serves the built React (Vite) frontend as static files and exposes API routes under `/api`.
+
+## Repo structure
+
+```
+/ (root)
+  requirements.txt
+  Procfile
+  server.py
+  dal.py
+  /frontend
+    package.json
+    vite.config.js
+    /dist          <- built output, must be committed
+      index.html
+      /assets
+```
+
+## One-time setup
+
+1. Install the Heroku CLI: https://devcenter.heroku.com/articles/heroku-cli
+2. Log in:
+   ```bash
+   heroku login
+   ```
+3. Confirm the app exists / link it:
+   ```bash
+   heroku apps
+   heroku git:remote -a your-app-name
+   ```
+4. Set required config vars:
+   ```bash
+   heroku config:set MONGODB_URI="your_atlas_connection_string" -a your-app-name
+   ```
+
+## `Procfile` (repo root, no file extension)
+
+```
+web: uvicorn server:app --host=0.0.0.0 --port=$PORT
+```
+
+## `server.py` route order (must stay in this order)
+
+```python
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+
+app = FastAPI()
+
+# 1. API routes first
+@app.get("/api/login")
+async def login():
+    ...
+
+# 2. Static assets (JS/CSS bundle)
+app.mount("/assets", StaticFiles(directory="frontend/dist/assets"), name="assets")
+
+# 3. Catch-all last — serves index.html so React Router can handle client-side routes
+@app.get("/{full_path:path}")
+async def serve_react_app(full_path: str):
+    return FileResponse("frontend/dist/index.html")
+```
+
+## Every deploy: rebuild the frontend
+
+Vite's `dist` folder is **not** rebuilt by Heroku automatically — it must be built locally and committed.
+
+```bash
+cd frontend
+npm run build
+cd ..
+git add frontend/dist
+git status   # confirm .js and .css files under frontend/dist/assets are staged
+git commit -m "Rebuild frontend"
+git push heroku main
+```
+
+**Important:** confirm both the `.js` and `.css` files show up in `git status` before committing. If the JS bundle is missing, check for a stray `.gitignore` rule:
+```bash
+git check-ignore -v frontend/dist/assets/index-*.js
+```
