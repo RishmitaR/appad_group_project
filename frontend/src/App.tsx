@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Link, Route} from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from './pages/Auth/Login.tsx'
 import Signup from './pages/Auth/Signup.tsx'
 import ProjectManagementPage from './pages/Project/ProjectGateway.tsx'
@@ -8,21 +8,14 @@ import ProjectDetail from './pages/Project/ProjectDetail.tsx'
 function App() {
   return (
     <BrowserRouter>
-      {/* Navigation */}
-      {/* <nav>
-        <Link to="/">Login Page</Link> |{" "}
-        <Link to="/projectmanagement">Project Management Page</Link> |{" "}
-        <Link to="/projectdetails">Project Detail Page</Link>
-      </nav> */}
-      {/* Routes */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/projectmanagement" element={<ProjectManagementPage/>} />
-        <Route path="/projectdetails" element={<ProjectDetail/>} /> 
+        <Route path="/projectmanagement" element={<ProjectManagementPage />} />
+        <Route path="/projectdetails" element={<ProjectDetail />} />
       </Routes>
-  </BrowserRouter>
+    </BrowserRouter>
   );
-}; 
+};
 
 export default App
