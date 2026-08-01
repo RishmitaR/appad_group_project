@@ -16,7 +16,6 @@ function Login() {
 
         const enteredUserId = userId.trim();
 
-        // Check whether both fields are filled.
         if (enteredUserId === "" || password === "") {
             setErrorMessage("Please enter both User ID and password.");
             return;
@@ -39,7 +38,6 @@ function Login() {
 
             const responseData = await loginResponse.json();
 
-            // Show an error if the backend rejects the login.
             if (!loginResponse.ok) {
                 setErrorMessage(
                     responseData.message ||
@@ -48,13 +46,11 @@ function Login() {
                 return;
             }
 
-            // Store the logged-in user's ID.
             localStorage.setItem(
                 "currentUser",
                 responseData.userid || enteredUserId
             );
 
-            // Go to the project management page.
             navigate("/projectmanagement");
         } catch (error) {
             console.error("Login request failed:", error);
@@ -65,6 +61,10 @@ function Login() {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const goToSignup = () => {
+        navigate("/signup");
     };
 
     return (
@@ -117,6 +117,17 @@ function Login() {
                         {isLoading ? "Signing In..." : "Sign In"}
                     </button>
                 </form>
+
+                <p className="signup-text">
+                    Do not have an account?{" "}
+                    <button
+                        type="button"
+                        onClick={goToSignup}
+                        className="signup-link"
+                    >
+                        Sign Up
+                    </button>
+                </p>
             </div>
         </div>
     );
