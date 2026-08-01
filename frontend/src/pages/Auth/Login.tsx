@@ -70,9 +70,7 @@ function Login() {
     return (
         <div className="login-page">
             <div className="login-container">
-                <h1>HaaS Login</h1>
-
-                <p>Enter your account details to continue.</p>
+                <h1>HaaS Login Page</h1>
 
                 <form onSubmit={handleLogin}>
                     <div className="form-group">
@@ -85,8 +83,6 @@ function Login() {
                             onChange={(event) =>
                                 setUserId(event.target.value)
                             }
-                            placeholder="Enter your User ID"
-                            autoComplete="username"
                             disabled={isLoading}
                         />
                     </div>
@@ -101,8 +97,6 @@ function Login() {
                             onChange={(event) =>
                                 setPassword(event.target.value)
                             }
-                            placeholder="Enter your password"
-                            autoComplete="current-password"
                             disabled={isLoading}
                         />
                     </div>
@@ -114,7 +108,7 @@ function Login() {
                     )}
 
                     <button type="submit" disabled={isLoading}>
-                        {isLoading ? "Signing In..." : "Sign In"}
+                        {isLoading ? "Signing In..." : "Login"}
                     </button>
                 </form>
 
@@ -122,8 +116,8 @@ function Login() {
                     Do not have an account?{" "}
                     <button
                         type="button"
-                        onClick={goToSignup}
                         className="signup-link"
+                        onClick={goToSignup}
                     >
                         Sign Up
                     </button>
