@@ -14,18 +14,20 @@ class UserLogin(BaseModel):
 class ProjectCreate(BaseModel):
     name: str
     description: str
-    project_id: str
+    project_id: int
+    userid: str
 
 class ProjectsDashboard(BaseModel):
     id: str = Field(alias="_id")
     name: str
     description: str
-    project_id: str
+    project_id: int
     members: List[str]
     checkouts: dict = {}   # {"HWSet1": 0, "HWSet2": 0}
 
 class JoinProject(BaseModel):
-    project_id: str
+    project_id: int
+    userid: str
 
 class CheckoutRequest(BaseModel):
     hwset: str            # "HWSet1" or "HWSet2"
