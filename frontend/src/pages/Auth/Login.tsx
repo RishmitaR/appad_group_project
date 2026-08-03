@@ -40,6 +40,7 @@ function Login() {
 
             if (!loginResponse.ok) {
                 setErrorMessage(
+                    responseData.detail ||
                     responseData.message ||
                     "Invalid User ID or password."
                 );
