@@ -1,5 +1,5 @@
 import './App.css'
-import { BrowserRouter, Routes, Route} from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from './pages/Auth/Login.tsx'
 import Signup from './pages/Auth/Signup.tsx'
 import ProjectManagementPage from './pages/Project/ProjectGateway.tsx'
