@@ -114,7 +114,7 @@ pip freeze > requirements.txt
 ### Step 5 — Run the backend server
  
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
  
 - `main` = the Python file name (`main.py`)
