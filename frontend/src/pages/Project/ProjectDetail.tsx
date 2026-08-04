@@ -313,6 +313,7 @@ const ProjectDetail: React.FC = () => {
                             Name: name,
                             TotalCheckedOut: quantity
                         }))}
+                        emptyMessage="Checked out hardware will show here"
                     />}
                 </div>
             </div>
