@@ -117,7 +117,8 @@ async def checkin_hardware(checkin: CheckinRequest):
         )
 
     project = await projects_collection.find_one({"project_id": checkin.project_id})
-    project_availability = project.get("hardware", {}).get(checkin.hwset)
+    print(repr(checkin.hwset), type(checkin.hwset))
+    project_availability =  project.get("hardware_sets", {}).get(checkin.hwset)
 
     if project_availability is None:
         raise HTTPException(
