@@ -2,15 +2,23 @@ import { useEffect, useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import React from 'react';
+import { useEffect, useState } from "react";
+import {useParams, useNavigate} from "react-router-dom"
 
 type CreateProjectFormFields = {
-    projectId: number;
+    projectId: Number;
     name: string;
     description: string;
 };
 
 type EnterProjectFormField = {
-    projectId: number;
+    projectId: Number;
+};
+
+type ProjectItem = {
+    project_id: number;
+    project_name: string;
+    project_desc: string;
 };
 
 type ProjectItem = {
@@ -43,29 +51,88 @@ function ProjectManagementPage(): React.ReactElement {
         loadProjects();
     }, []);
 
+    const [projects, setProjects] = useState<ProjectItem[]>([]);
+    const [message, setMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState<string>("");
+
+    const navigate = useNavigate();
+
+    // Get the UserId
+    const { userId } = useParams<{ userId: string }>();
+    const userIdStr = userId ? String(userId) : undefined;
+
+    // Load users projects
+    const loadProjects = async () => {
+        try {
+            const projectRes = await fetch(`/api/project/?userid=${userIdStr}`);
+            if(!projectRes.ok){
+                throw new Error("Unable to load projects")
+            }
+            const data = await projectRes.json()
+            setProjects(data)
+        } catch(error){
+            setErrorMessage(error instanceof Error ? error.message : 'Unable to load projects');
+        }
+    };
+
+    useEffect(() => {
+        loadProjects();
+    }, []);
+
+
+    // Create Project Form
     const {
         register: registerCreate,
+        reset: resetCreate,
         handleSubmit: handleSubmitCreate,
         reset: resetCreate,
     } = useForm<CreateProjectFormFields>();
 
-    const onSubmitCreate: SubmitHandler<CreateProjectFormFields> = async (data) => {
-        setMessage('');
-        setErrorMessage('');
-
+    const onSubmitCreate: SubmitHandler<CreateProjectFormFields> = async (data) =>{
+        setMessage(""); 
+        setErrorMessage("");
         try {
-            const response = await fetch('/api/project/create', {
-                method: 'POST',
+            const projectCreationRes = await fetch("/api/project/create", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    project_id: data.projectId,
                     name: data.name,
                     description: data.description,
-                    userid: currentUser,
+                    project_id: data.projectId,
+                    userid: userIdStr 
                 }),
             });
+
+            const responseData = await projectCreationRes.json();
+
+            if (!projectCreationRes.ok) {
+                if(projectCreationRes.status == 409){
+                    setErrorMessage(
+                        responseData.detail || "A project with this ID already exists."
+                    );
+                } else{
+                    setErrorMessage(
+                        responseData?.detail ||
+                        responseData?.message ||
+                        "Failed to create project. Please try again"
+                    );
+                }
+                return;
+            }
+
+            // success: reset form
+            setMessage(responseData.message || 'Project created successfully');
+            resetCreate();
+            await loadProjects();
+
+        } catch(error){
+             console.error("Create Project request failed:", error);
+             setErrorMessage("Network error — please check your connection and try again.");
+        } 
+
+    };
 
             const responseData = await response.json().catch(() => ({}));
             if (!response.ok) {
@@ -80,45 +147,54 @@ function ProjectManagementPage(): React.ReactElement {
         }
     };
 
+
+    // Enter Project Form
     const {
         register: registerEnter,
         handleSubmit: handleSubmitEnter,
         reset: resetEnter,
     } = useForm<EnterProjectFormField>();
 
-    const onSubmitEnter: SubmitHandler<EnterProjectFormField> = async (data) => {
-        setMessage('');
-        setErrorMessage('');
-
+    const onSubmitEnter: SubmitHandler<EnterProjectFormField> = async (data) =>{
+        setErrorMessage("");
+        console.log(data.projectId)
         try {
-            const response = await fetch('/api/project/join', {
-                method: 'POST',
+            const projectEnterRes = await fetch("/api/project/join", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     project_id: data.projectId,
-                    userid: currentUser,
+                    userid: userIdStr
                 }),
             });
 
-            const responseData = await response.json().catch(() => ({}));
-            if (!response.ok) {
-                throw new Error(responseData.detail || 'Unable to join project');
+            const responseData = await projectEnterRes.json();
+
+            if(!projectEnterRes.ok){
+                if (projectEnterRes.status == 409){
+                    setErrorMessage(
+                        responseData.detail || "A project with this ID does not exist"
+                    );
+                } else {
+                    setErrorMessage(
+                        responseData?.detail ||
+                        responseData?.message ||
+                        "Failed to enter project. Please try again"
+                    )
+                }
+                return; 
             }
 
-            setMessage(responseData.message || 'Joined project successfully');
-            resetEnter();
-            await loadProjects();
-        } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : 'Unable to join project');
-        }
-    };
+            // sucess: navigate
+            navigate(`/projectdetails/${userIdStr}/${data.projectId}`);
 
-    const handleLogout = () => {
-        localStorage.removeItem('currentUser');
-        navigate('/');
-    };
+        } catch(error){
+            console.error("Enter project request failed", error);
+            setErrorMessage("Network error — please check your connection and try again.");
+        } 
+    }
 
     return (
         <>
@@ -132,9 +208,9 @@ function ProjectManagementPage(): React.ReactElement {
                 <div className="left-panel">
                     <h1>Create Project</h1>
                     <form className="stacked-form" onSubmit={handleSubmitCreate(onSubmitCreate)}>
-                        <input {...registerCreate('projectId')} type="number" placeholder="Project ID" />
-                        <input {...registerCreate('name')} type="text" placeholder="Project Name" />
-                        <input {...registerCreate('description')} type="text" placeholder="Project Description" />
+                        <input {...registerCreate("projectId",{valueAsNumber: true})} type="number" placeholder="Project ID"/> 
+                        <input {...registerCreate("name")} type="text" placeholder="Project Name"/>
+                        <input {...registerCreate("description")} type="text" placeholder="Project Description"/> 
                         <button type="submit">Create Project</button>
                     </form>
                     {message && <p style={{ color: 'green' }}>{message}</p>}
@@ -144,10 +220,36 @@ function ProjectManagementPage(): React.ReactElement {
                 <div className="right-panel">
                     <h1>Enter Existing Project</h1>
                     <form className="stacked-form" onSubmit={handleSubmitEnter(onSubmitEnter)}>
-                        <input {...registerEnter('projectId')} type="number" placeholder="Project ID" />
-                        <button type="submit">Join Project</button>
+                        <input {...registerEnter("projectId", {valueAsNumber: true})} type="number" placeholder="Project ID"></input>
+                        <button type="submit">Enter Project</button>
                     </form>
+                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
                 </div>
+            </section>
+
+            <section className="project-display" style={{marginTop: '24px'}}>
+                <h2>{userIdStr}'s Projects</h2>
+                <div style={{display: 'grid', gap: '12px'}}>
+                    {projects.length === 0 ? (
+                        <p>No projects yet.</p>
+                    ) : (
+                        projects.map((project) => (
+                            <div 
+                                key={project.project_id}
+                                style={{
+                                    border: '1px solid #ccc',
+                                    borderRadius: '8px',
+                                    padding: '12px'
+                                }}
+                            >
+                                <strong>{project.project_name}</strong>
+                                <div>Project ID: {project.project_id}</div>
+                                <div>Description: {project.project_desc}</div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
             </section>
 
             <section className="container" style={{ marginTop: '24px' }}>

@@ -1,77 +1,131 @@
-import { useState } from 'react';
-import type { FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const navigate = useNavigate();
-    const [userid, setUserid] = useState('');
-    const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [userId, setUserId] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    const navigate = useNavigate();
+
+    const handleLogin = async (
+        event: React.FormEvent<HTMLFormElement>
+    ) => {
         event.preventDefault();
-        setErrorMessage('');
-        setIsSubmitting(true);
+
+        const enteredUserId = userId.trim();
+
+        if (enteredUserId === "" || password === "") {
+            setErrorMessage("Please enter both User ID and password.");
+            return;
+        }
+
+        setErrorMessage("");
+        setIsLoading(true);
 
         try {
-            const response = await fetch('/api/users/login', {
-                method: 'POST',
+            const loginResponse = await fetch("/api/users/login", {
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ userid, password }),
+                body: JSON.stringify({
+                    userid: enteredUserId,
+                    password: password,
+                }),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.detail || 'Invalid username or password');
+            const responseData = await loginResponse.json();
+
+            if (!loginResponse.ok) {
+                setErrorMessage(
+                    responseData.detail ||
+                    responseData.message ||
+                    "Invalid User ID or password."
+                );
+                return;
             }
 
-            const responseData = await response.json().catch(() => ({}));
-            localStorage.setItem('currentUser', responseData.userid || userid);
-            navigate('/projectmanagement');
+            localStorage.setItem(
+                "currentUser",
+                responseData.userid || enteredUserId
+            );
+
+            navigate(`/projectmanagement/${enteredUserId}`);
         } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : 'Login failed');
+            console.error("Login request failed:", error);
+
+            setErrorMessage(
+                "Unable to connect to the server. Please try again."
+            );
         } finally {
-            setIsSubmitting(false);
+            setIsLoading(false);
         }
     };
 
-    return (
-        <div>
-            <h1>HaaS Login Page</h1>
-            <form onSubmit={handleSubmit}>
-                <div>
-                    <label>User Id </label>
-                    <input
-                        type="text"
-                        value={userid}
-                        onChange={(event) => setUserid(event.target.value)}
-                        required
-                    />
-                </div>
-                <div>
-                    <label>Password </label>
-                    <input
-                        type="password"
-                        value={password}
-                        onChange={(event) => setPassword(event.target.value)}
-                        required
-                    />
-                </div>
-                {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-                <button type="submit" disabled={isSubmitting}>
-                    {isSubmitting ? 'Logging in...' : 'Login'}
-                </button>
+    const goToSignup = () => {
+        navigate("/signup");
+    };
 
-                <p>
-                    Don't have an account? <a href="/signup">Sign Up</a>
+    return (
+        <div className="login-page">
+            <div className="login-container">
+                <h1>HaaS Login Page</h1>
+
+                <form onSubmit={handleLogin}>
+                    <div className="form-group">
+                        <label htmlFor="userId">User ID</label>
+
+                        <input
+                            id="userId"
+                            type="text"
+                            value={userId}
+                            onChange={(event) =>
+                                setUserId(event.target.value)
+                            }
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <label htmlFor="password">Password</label>
+
+                        <input
+                            id="password"
+                            type="password"
+                            value={password}
+                            onChange={(event) =>
+                                setPassword(event.target.value)
+                            }
+                            disabled={isLoading}
+                        />
+                    </div>
+
+                    {errorMessage !== "" && (
+                        <p className="error-message">
+                            {errorMessage}
+                        </p>
+                    )}
+
+                    <button type="submit" disabled={isLoading}>
+                        {isLoading ? "Signing In..." : "Login"}
+                    </button>
+                </form>
+
+                <p className="signup-text">
+                    Do not have an account?{" "}
+                    <button
+                        type="button"
+                        className="signup-link"
+                        onClick={goToSignup}
+                    >
+                        Sign Up
+                    </button>
                 </p>
-            </form>
+            </div>
         </div>
     );
 }
 
 export default Login;
-
