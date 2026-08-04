@@ -8,21 +8,14 @@ import ProjectDetail from './pages/Project/ProjectDetail.tsx'
 function App() {
   return (
     <BrowserRouter>
-      {/* Navigation */}
-      {/* <nav>
-        <Link to="/">Login Page</Link> |{" "}
-        <Link to="/projectmanagement">Project Management Page</Link> |{" "}
-        <Link to="/projectdetails">Project Detail Page</Link>
-      </nav> */}
-      {/* Routes */}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/projectmanagement/:userId" element={<ProjectManagementPage/>} />
         <Route path="/projectdetails/:userId/:projectId" element={<ProjectDetail/>} /> 
       </Routes>
-  </BrowserRouter>
+    </BrowserRouter>
   );
-}; 
+};
 
 export default App
