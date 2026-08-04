@@ -35,3 +35,8 @@
 	gap: 16px; /* Space between each input group */
 	max-width: 400px;
 }
+
+.projects-section {
+    display: flex;
+    flex-direction: column;
+}
