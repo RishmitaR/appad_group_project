@@ -40,7 +40,7 @@ const ProjectDetail: React.FC = () => {
     };
 
     const handleBackClick = () => {
-        navigate(`/projectmanagement/:${userIdStr}`);
+        navigate(`/projectmanagement/${userIdStr}`);
     };
 
     const handleLogoutClick = () => {
