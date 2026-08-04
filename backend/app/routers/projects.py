@@ -80,12 +80,12 @@ async def checkout_hardware(checkout: CheckoutRequest):
             detail=f"Hardware '{checkout.hwset}' does not exist",
         )
 
-    availability = hardware_set["quantity"]
+    availability = hardware_set["availability"]
 
     if checkout.quantity > availability:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Requested quantity ({checkout.quantity}) exceeds available stock ({availability})"
+            detail=f"Requested quantity {checkout.quantity} exceeds available stock ({availability})"
         )
 
     project = await projects_collection.find_one({"project_id": checkout.project_id})
@@ -97,7 +97,7 @@ async def checkout_hardware(checkout: CheckoutRequest):
 
     await hardware_sets_collection.update_one(
         {"_id": hardware_set["_id"]},
-        {"$inc": {"quantity": -checkout.quantity}}
+        {"$inc": {"availability": -checkout.quantity}}
     )
 
     return {
@@ -130,7 +130,7 @@ async def checkin_hardware(checkin: CheckinRequest):
     if checkin.quantity > project_availability:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Requested quantity of ({checkin.quantity}) exceeds current amount of stock checked out ({project_availability})"
+            detail=f"Requested quantity of {checkin.quantity} to check in exceeds current amount of stock checked out ({project_availability})"
         )
 
     await projects_collection.update_one(
@@ -140,7 +140,7 @@ async def checkin_hardware(checkin: CheckinRequest):
 
     await hardware_sets_collection.update_one(
         {"_id": hardware_set["_id"]},
-        {"$inc": {"quantity": checkin.quantity}}
+        {"$inc": {"availability": checkin.quantity}}
     )
     
     return {

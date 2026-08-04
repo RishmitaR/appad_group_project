@@ -36,7 +36,7 @@ function DynamicTable<T extends Record<string, any>>({
                     <input
                       type="number"
                       min={0}
-                      value={row[col] ?? 0}
+                      value={row[col] === 0 ? '': row[col]}
                       onChange={(e) => onCellChange?.(rowIndex, col, Number(e.target.value))}
                       style={{ width: '100%' }}
                     />
