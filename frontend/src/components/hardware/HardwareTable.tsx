@@ -1,15 +1,17 @@
 interface DynamicTableProps<T extends Record<string, any>> {
     data: T[];
+    emptyMessage?: string
     editableColumns?: string[];
     onCellChange?: (rowIndex: number, column: string, value: string | number) => void;
 }
 
 function DynamicTable<T extends Record<string, any>>({
   data,
+  emptyMessage = "No data available",
   editableColumns = [],
   onCellChange,
 }: DynamicTableProps<T>) {
-  if (!data || data.length === 0) return <div>No data available</div>;
+  if (!data || data.length === 0) return <div>{emptyMessage}</div>;
 
   const columns = Object.keys(data[0]);
 
@@ -36,7 +38,7 @@ function DynamicTable<T extends Record<string, any>>({
                     <input
                       type="number"
                       min={0}
-                      value={row[col] ?? 0}
+                      value={row[col] === 0 ? '': row[col]}
                       onChange={(e) => onCellChange?.(rowIndex, col, Number(e.target.value))}
                       style={{ width: '100%' }}
                     />

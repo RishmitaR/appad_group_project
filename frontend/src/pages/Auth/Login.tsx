@@ -52,7 +52,7 @@ function Login() {
                 responseData.userid || enteredUserId
             );
 
-            navigate("/projectmanagement");
+            navigate(`/projectmanagement/${enteredUserId}`);
         } catch (error) {
             console.error("Login request failed:", error);
 
