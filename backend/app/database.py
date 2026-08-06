@@ -4,7 +4,7 @@ import os
 
 load_dotenv()  # load .env for local dev
 
-MONGODB_CONN_STRING = os.getenv("MONGODB_URI")
+MONGODB_CONN_STRING = os.getenv("MONGO_URI")
 
 client = motor.motor_asyncio.AsyncIOMotorClient(MONGODB_CONN_STRING)
 db = client.hardwareManagement
