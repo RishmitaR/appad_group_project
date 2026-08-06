@@ -177,3 +177,101 @@ Your frontend should now be running at something like:
 2. Open terminal 2 → `cd frontend` → `npm run dev`
 3. Open your browser to the frontend URL and start coding!
 ---
+
+## Deploying to Heroku
+
+We use a separate branch (`heroku-master`) to track commits that get deployed to Heroku, 
+kept apart from `master` (our main development branch). Each Heroku app (backend/frontend) 
+only receives its respective subfolder via `git subtree push`.
+
+### One-time setup (already done, for reference)
+```bash
+heroku git:remote -a appad-group-assignment-backend -r heroku-backend
+heroku git:remote -a appad-assignment-frontend -r heroku-frontend
+```
+
+Verify remotes exist:
+```bash
+git remote -v
+```
+
+### Making changes and deploying
+
+**1. Make your changes on `master` as normal, commit them:**
+```bash
+git checkout master
+git add .
+git commit -m "your commit message"
+git push origin master
+```
+
+**2. Bring those changes into `heroku-master`:**
+```bash
+git checkout heroku-master
+git merge master
+```
+
+(Resolving changes in the merge will take a while, for future scalability we need a live mode and a dev mode)
+
+**3. Push the backend subfolder to Heroku:**
+```bash
+git subtree push --prefix backend heroku-backend main
+```
+
+**4. Push the frontend subfolder to Heroku:**
+```bash
+git subtree push --prefix frontend heroku-frontend main
+```
+
+**5. Switch back to `master` to keep working:**
+```bash
+git checkout master
+```
+
+### Verify a deploy worked
+
+Check dyno status:
+```bash
+heroku ps -a appad-group-assignment-backend
+heroku ps -a appad-assignment-frontend
+```
+
+Tail logs live while testing:
+```bash
+heroku logs --tail -a appad-group-assignment-backend
+heroku logs --tail -a appad-assignment-frontend
+```
+
+### If a push fails with "prefix mismatch" or is rejected
+
+Force a fresh subtree split:
+```bash
+git push heroku-backend `git subtree split --prefix backend heroku-master`:main --force
+git push heroku-frontend `git subtree split --prefix frontend heroku-master`:main --force
+```
+
+### Required environment variables
+
+Set once per app — confirm with teammates these are correct before assuming a bug is code-related:
+
+**Backend** (`appad-group-assignment-backend`):
+```bash
+heroku config:set MONGODB_URI="mongodb+srv://..." -a appad-group-assignment-backend
+```
+
+**Frontend** (`appad-assignment-frontend`):
+```bash
+heroku config:set VITE_API_URL="https://appad-group-assignment-backend-XXXX.herokuapp.com" -a appad-assignment-frontend
+```
+
+Check current values anytime:
+```bash
+heroku config -a appad-group-assignment-backend
+heroku config -a appad-assignment-frontend
+```
+
+### If a dyno isn't running after a successful build
+```bash
+heroku ps:scale web=1 -a appad-group-assignment-backend
+heroku ps:scale web=1 -a appad-assignment-frontend
+```
