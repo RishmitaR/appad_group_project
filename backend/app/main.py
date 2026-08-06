@@ -9,7 +9,7 @@ app = FastAPI(title="Hardware Management API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://appad-assignment-frontend-9e814d800605.herokuapp.com/"],
+    allow_origins=["https://appad-assignment-frontend-9e814d800605.herokuapp.com"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
