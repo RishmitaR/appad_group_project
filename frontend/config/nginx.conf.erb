@@ -1,0 +1,4 @@
+location / {
+  root <%= ENV["APP_ROOT"] %>/dist;
+  try_files $uri $uri/ /index.html;
+}
