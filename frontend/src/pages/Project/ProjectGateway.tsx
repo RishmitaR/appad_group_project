@@ -35,7 +35,7 @@ function ProjectManagementPage(): React.ReactElement {
     // Load users projects
     const loadProjects = async () => {
         try {
-            const projectRes = await fetch(`/api/project/?userid=${userIdStr}`);
+            const projectRes = await fetch(`${import.meta.env.VITE_API_URL}/api/project/?userid=${userIdStr}`);
             if(!projectRes.ok){
                 throw new Error("Unable to load projects")
             }
@@ -62,7 +62,7 @@ function ProjectManagementPage(): React.ReactElement {
         setMessage(""); 
         setErrorMessage("");
         try {
-            const projectCreationRes = await fetch("/api/project/create", {
+            const projectCreationRes = await fetch(`${import.meta.env.VITE_API_URL}/api/project/create`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -116,7 +116,7 @@ function ProjectManagementPage(): React.ReactElement {
         setErrorMessage("");
         console.log(data.projectId)
         try {
-            const projectEnterRes = await fetch("/api/project/join", {
+            const projectEnterRes = await fetch(`${import.meta.env.VITE_API_URL}/api/project/join`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

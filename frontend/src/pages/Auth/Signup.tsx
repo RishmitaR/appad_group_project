@@ -17,7 +17,7 @@ function Signup() {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch('/api/users/register', {
+            const response = await fetch(`${import.meta.env.VITE_API_URL}/api/users/register`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

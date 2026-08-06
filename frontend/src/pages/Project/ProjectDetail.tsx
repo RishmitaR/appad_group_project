@@ -60,7 +60,7 @@ const ProjectDetail: React.FC = () => {
     // Get the project details
     const loadProjectDetails = async () => {
         try {
-            const projectRes = await fetch(`/api/project/project-dashboard/${projectIdNum}`);
+            const projectRes = await fetch(`${import.meta.env.VITE_API_URL}/api/project/project-dashboard/${projectIdNum}`);
             if(!projectRes.ok){
                 throw new Error("Unable to load project details")
             }
@@ -86,7 +86,7 @@ const ProjectDetail: React.FC = () => {
 
     const loadAllHardwareSets = async () => {
         try {
-            const res = await fetch(`/api/hardware/`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hardware/`);
             if (!res.ok) throw new Error("Unable to load hardware sets");
             const names: string[] = await res.json();
             setAllHardwareSetNames(names);
@@ -101,7 +101,7 @@ const ProjectDetail: React.FC = () => {
 
             const results = await Promise.all(
                 allHardwareSetNames.map(async (hwsetId) => {
-                    const res = await fetch(`/api/hardware/availability/${hwsetId}`);
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hardware/availability/${hwsetId}`);
                     if (!res.ok) {
                         throw new Error(`Unable to load availability for ${hwsetId}`)
                     }
@@ -124,7 +124,7 @@ const ProjectDetail: React.FC = () => {
 
             const results = await Promise.all(
                 allHardwareSetNames.map(async (hwsetId) => {
-                    const res = await fetch(`/api/hardware/capacity/${hwsetId}`);
+                    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/hardware/capacity/${hwsetId}`);
                     if (!res.ok) {
                         throw new Error(`Unable to load capacity for ${hwsetId}`)
                     }
@@ -172,7 +172,7 @@ const ProjectDetail: React.FC = () => {
             }
 
             for (const [hwSetId,quantity] of itemsToCheckOut){
-                const checkoutRes = await fetch(`/api/project/checkout/${projectIdNum}`, {
+                const checkoutRes = await fetch(`${import.meta.env.VITE_API_URL}/api/project/checkout/${projectIdNum}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
@@ -228,7 +228,7 @@ const ProjectDetail: React.FC = () => {
             }
 
             for (const [hwSetId,quantity] of itemsToCheckIn){
-                const checkinRes = await fetch(`/api/project/checkin/${projectIdNum}`, {
+                const checkinRes = await fetch(`${import.meta.env.VITE_API_URL}/api/project/checkin/${projectIdNum}`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
