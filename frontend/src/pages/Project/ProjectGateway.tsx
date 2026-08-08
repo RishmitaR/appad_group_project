@@ -2,6 +2,7 @@ import {useForm, type SubmitHandler} from 'react-hook-form';
 import React from 'react';
 import { useEffect, useState } from "react";
 import {useParams, useNavigate} from "react-router-dom"
+import Button from '../../components/common/Button';
 
 type CreateProjectFormFields = {
     projectId: Number;
@@ -50,6 +51,9 @@ function ProjectManagementPage(): React.ReactElement {
         loadProjects();
     }, []);
 
+    const handleLogoutClick = () => {
+    navigate('/');
+    }
 
     // Create Project Form
     const {
@@ -174,6 +178,9 @@ function ProjectManagementPage(): React.ReactElement {
                         <button type="submit">Enter Project</button>
                     </form>
                     {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
+                </div>
+                <div>
+                    <Button onClick={handleLogoutClick}>Logout</Button>
                 </div>
             </section>
 
